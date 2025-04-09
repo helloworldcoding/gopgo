@@ -8,11 +8,6 @@ package sys
 import (
 	"context"
 	"fmt"
-	"github.com/gogf/gf/v2/database/gdb"
-	"github.com/gogf/gf/v2/errors/gerror"
-	"github.com/gogf/gf/v2/frame/g"
-	"github.com/gogf/gf/v2/os/gctx"
-	"github.com/gogf/gf/v2/util/gconv"
 	"hotgo/addons/hgexample/model/input/sysin"
 	"hotgo/addons/hgexample/service"
 	"hotgo/internal/dao"
@@ -23,6 +18,12 @@ import (
 	"hotgo/utility/convert"
 	"hotgo/utility/excel"
 	"hotgo/utility/validate"
+
+	"github.com/gogf/gf/v2/database/gdb"
+	"github.com/gogf/gf/v2/errors/gerror"
+	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/os/gctx"
+	"github.com/gogf/gf/v2/util/gconv"
 )
 
 type sSysTable struct{}
@@ -87,7 +88,7 @@ func (s *sSysTable) List(ctx context.Context, in *sysin.TableListInp) (list []*s
 		mod = mod.Where(fmt.Sprintf(`JSON_CONTAINS(%s,'%v')`, cols.Hobby, in.Hobby))
 	}
 
-	totalCount, err = mod.Clone().Count(1)
+	totalCount, err = mod.Clone().Count()
 	if err != nil {
 		err = gerror.Wrap(err, "获取表格数据行失败，请稍后重试！")
 		return

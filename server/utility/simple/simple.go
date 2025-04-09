@@ -7,14 +7,16 @@ package simple
 
 import (
 	"context"
+	"fmt"
+	"hotgo/internal/consts"
+	"hotgo/utility/encrypt"
+
 	"github.com/gogf/gf/v2/crypto/gmd5"
 	"github.com/gogf/gf/v2/encoding/gbase64"
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gfile"
 	"github.com/gogf/gf/v2/os/glog"
-	"hotgo/internal/consts"
-	"hotgo/utility/encrypt"
 )
 
 // RouterPrefix 获取应用路由前缀
@@ -67,6 +69,8 @@ func CheckPassword(input, salt, hash string) (err error) {
 		return err
 	}
 
+	gm := gmd5.MustEncryptString(password + salt)
+	fmt.Println("\npassword:\n", gm)
 	if hash != gmd5.MustEncryptString(password+salt) {
 		err = gerror.New("用户密码不正确")
 		return

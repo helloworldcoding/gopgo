@@ -25,4 +25,5 @@ type PayRefund struct {
 	Status        interface{} // 退款状态
 	CreatedAt     *gtime.Time // 申请时间
 	UpdatedAt     *gtime.Time // 更新时间
+	Uuid          interface{} // 唯一标识
 }

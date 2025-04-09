@@ -16,4 +16,5 @@ type SysBlacklist struct {
 	Status    int         `json:"status"    orm:"status"     description:"状态"`
 	CreatedAt *gtime.Time `json:"createdAt" orm:"created_at" description:"创建时间"`
 	UpdatedAt *gtime.Time `json:"updatedAt" orm:"updated_at" description:"更新时间"`
+	Uuid      string      `json:"uuid"      orm:"uuid"       description:"唯一标识"`
 }

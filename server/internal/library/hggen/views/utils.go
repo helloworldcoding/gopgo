@@ -8,7 +8,6 @@ package views
 import (
 	"context"
 	"fmt"
-	"github.com/gogf/gf/v2/util/gutil"
 	"hotgo/internal/consts"
 	"hotgo/internal/library/hggen/views/gohtml"
 	"hotgo/internal/model"
@@ -20,6 +19,8 @@ import (
 	"regexp"
 	"strings"
 	"unicode"
+
+	"github.com/gogf/gf/v2/util/gutil"
 
 	"github.com/gogf/gf/v2/database/gdb"
 	"github.com/gogf/gf/v2/errors/gerror"
@@ -79,20 +80,30 @@ func ImportSql(ctx context.Context, path string) error {
 	if err != nil {
 		return err
 	}
-
-	sqlArr := strings.Split(string(rows), "\n")
-	for _, sql := range sqlArr {
-		sql = strings.TrimSpace(sql)
-		if sql == "" || strings.HasPrefix(sql, "--") {
-			continue
-		}
-		exec, err := g.DB().Exec(ctx, sql)
-		g.Log().Infof(ctx, "views.ImportSql sql:%v, exec:%+v, err:%+v", sql, exec, err)
-		if err != nil {
-			return err
-		}
+	// pg 执行sql,不支持一行一行执行。
+	exec, err := g.DB().Exec(ctx, string(rows))
+	if err != nil {
+		g.Log().Infof(ctx, "views.ImportSql sql:%v, exec:%+v, err:%+v", string(rows), exec, err)
+		return err
 	}
 	return nil
+
+	/*
+		sqlArr := strings.Split(string(rows), "\n")
+		for _, sql := range sqlArr {
+			sql = strings.TrimSpace(sql)
+			g.Log().Infof(ctx, "\n[views.ImportSql sql]:%v\n", sql)
+			if sql == "" || strings.HasPrefix(sql, "--") {
+				continue
+			}
+			exec, err := g.DB().Exec(ctx, sql)
+			g.Log().Infof(ctx, "views.ImportSql sql:%v, exec:%+v, err:%+v", sql, exec, err)
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	*/
 }
 
 func checkCurdPath(temp *model.GenerateAppCrudTemplate, addonName string) (err error) {

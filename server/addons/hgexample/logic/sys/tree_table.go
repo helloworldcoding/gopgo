@@ -8,9 +8,6 @@ package sys
 import (
 	"context"
 	"fmt"
-	"github.com/gogf/gf/v2/database/gdb"
-	"github.com/gogf/gf/v2/errors/gerror"
-	"github.com/gogf/gf/v2/frame/g"
 	"hotgo/addons/hgexample/model/input/sysin"
 	"hotgo/addons/hgexample/service"
 	"hotgo/internal/consts"
@@ -19,6 +16,10 @@ import (
 	"hotgo/internal/library/hgorm"
 	"hotgo/internal/library/hgorm/handler"
 	"hotgo/internal/model/entity"
+
+	"github.com/gogf/gf/v2/database/gdb"
+	"github.com/gogf/gf/v2/errors/gerror"
+	"github.com/gogf/gf/v2/frame/g"
 )
 
 type sSysTreeTable struct{}
@@ -87,7 +88,7 @@ func (s *sSysTreeTable) List(ctx context.Context, in *sysin.TreeTableListInp) (l
 		mod = mod.Where(fmt.Sprintf(`JSON_CONTAINS(%s,'%v')`, cols.Hobby, in.Hobby))
 	}
 
-	totalCount, err = mod.Clone().Count(1)
+	totalCount, err = mod.Clone().Count()
 	if err != nil {
 		err = gerror.Wrap(err, "获取表格数据行失败，请稍后重试！")
 		return

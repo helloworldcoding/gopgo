@@ -13,41 +13,42 @@ import (
 // AddonHgexampleTable is the golang structure of table hg_addon_hgexample_table for DAO operations like Where/Data.
 type AddonHgexampleTable struct {
 	g.Meta      `orm:"table:hg_addon_hgexample_table, do:true"`
-	Id          interface{} // ID
-	Pid         interface{} // 上级ID
-	Level       interface{} // 树等级
-	Tree        interface{} // 关系树
-	CategoryId  interface{} // 分类ID
-	Flag        *gjson.Json // 标签
-	Title       interface{} // 标题
-	Description interface{} // 描述
-	Content     interface{} // 内容
-	Image       interface{} // 单图
-	Images      *gjson.Json // 多图
-	Attachfile  interface{} // 附件
-	Attachfiles *gjson.Json // 多附件
-	Map         *gjson.Json // 动态键值对
-	Star        interface{} // 推荐星
-	Price       interface{} // 价格
-	Views       interface{} // 浏览次数
-	ActivityAt  *gtime.Time // 活动时间
-	StartAt     *gtime.Time // 开启时间
-	EndAt       *gtime.Time // 结束时间
-	Switch      interface{} // 开关
-	Sort        interface{} // 排序
-	Avatar      interface{} // 头像
-	Sex         interface{} // 性别
-	Qq          interface{} // qq
-	Email       interface{} // 邮箱
-	Mobile      interface{} // 手机号码
-	Hobby       *gjson.Json // 爱好
-	Channel     interface{} // 渠道
-	CityId      interface{} // 所在城市
-	Remark      interface{} // 备注
-	Status      interface{} // 状态
-	CreatedBy   interface{} // 创建者
-	UpdatedBy   interface{} // 更新者
-	CreatedAt   *gtime.Time // 创建时间
-	UpdatedAt   *gtime.Time // 修改时间
-	DeletedAt   *gtime.Time // 删除时间
+	Id          interface{} //
+	Uuid        interface{} //
+	Pid         interface{} //
+	Level       interface{} //
+	Tree        interface{} //
+	CategoryId  interface{} //
+	Flag        *gjson.Json //
+	Title       interface{} //
+	Description interface{} //
+	Content     interface{} //
+	Image       interface{} //
+	Images      *gjson.Json //
+	Attachfile  interface{} //
+	Attachfiles *gjson.Json //
+	Map         *gjson.Json //
+	Star        interface{} //
+	Price       interface{} //
+	Views       interface{} //
+	ActivityAt  *gtime.Time //
+	StartAt     *gtime.Time //
+	EndAt       *gtime.Time //
+	Switch      interface{} //
+	Sort        interface{} //
+	Avatar      interface{} //
+	Sex         interface{} //
+	Qq          interface{} //
+	Email       interface{} //
+	Mobile      interface{} //
+	Hobby       *gjson.Json //
+	Channel     interface{} //
+	CityId      interface{} //
+	Remark      interface{} //
+	Status      interface{} //
+	CreatedBy   interface{} //
+	UpdatedBy   interface{} //
+	CreatedAt   *gtime.Time //
+	UpdatedAt   *gtime.Time //
+	DeletedAt   *gtime.Time //
 }

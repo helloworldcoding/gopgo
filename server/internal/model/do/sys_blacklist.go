@@ -18,4 +18,5 @@ type SysBlacklist struct {
 	Status    interface{} // 状态
 	CreatedAt *gtime.Time // 创建时间
 	UpdatedAt *gtime.Time // 更新时间
+	Uuid      interface{} // 唯一标识
 }

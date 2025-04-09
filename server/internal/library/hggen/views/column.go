@@ -8,24 +8,34 @@ package views
 import (
 	"context"
 	"fmt"
+	"hotgo/internal/library/hggen/internal/cmd/gendao"
+	"hotgo/internal/model/input/sysin"
+	"strings"
+
 	"github.com/gogf/gf/v2/database/gdb"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/text/gregex"
 	"github.com/gogf/gf/v2/text/gstr"
 	"github.com/gogf/gf/v2/util/gconv"
-	"hotgo/internal/library/hggen/internal/cmd/gendao"
-	"hotgo/internal/model/input/sysin"
-	"strings"
 )
 
 // DoTableColumns 获取指定表生成字段列表
 func DoTableColumns(ctx context.Context, in *sysin.GenCodesColumnListInp, config gendao.CGenDaoInput) (fields []*sysin.GenCodesColumnListModel, err error) {
 	var (
-		sql  = "select ORDINAL_POSITION as `id`, COLUMN_NAME as `name`, COLUMN_COMMENT as `dc`, DATA_TYPE as `dataType`, COLUMN_TYPE as `sqlType`, CHARACTER_MAXIMUM_LENGTH as `length`, IS_NULLABLE as `isAllowNull`, COLUMN_DEFAULT as `defaultValue`, COLUMN_KEY as `index`, EXTRA as `extra` from information_schema.COLUMNS where TABLE_SCHEMA = '%s' and TABLE_NAME = '%s' ORDER BY `id` ASC"
-		conf = g.DB(in.Name).GetConfig()
+		sql = `SELECT ordinal_position as "id", c.column_name as "name", col_description((c.table_schema || '.' || c.table_name)::regclass, ordinal_position) as "dc", data_type as "dataType", udt_name as "sqlType", character_maximum_length as "length", is_nullable as "isAllowNull", column_default as "defaultValue", CASE WHEN pk.column_name IS NOT NULL THEN 'PRI' ELSE '' END as "index", '' as "extra" FROM information_schema.columns c LEFT JOIN (SELECT ku.column_name FROM information_schema.table_constraints AS tc JOIN information_schema.key_column_usage AS ku ON tc.constraint_type = 'PRIMARY KEY' AND tc.constraint_name = ku.constraint_name WHERE tc.table_schema = '%s' AND tc.table_name = '%s') pk ON c.column_name = pk.column_name WHERE c.table_schema = '%s' AND c.table_name = '%s' ORDER BY ordinal_position ASC`
+		//conf = g.DB(in.Name).GetConfig()
 	)
 
-	err = g.DB(in.Name).Ctx(ctx).Raw(fmt.Sprintf(sql, conf.Name, in.Table)).Scan(&fields)
+	//err = g.DB(in.Name).Ctx(ctx).Raw(fmt.Sprintf(sql, "public", in.Table, "public", in.Table)).Scan(&fields)
+	err = g.DB(in.Name).Ctx(ctx).Raw(fmt.Sprintf(sql, "public", in.Table, "public", in.Table)).Scan(&fields)
+	for i := range fields {
+		tmp := gconv.String(fields[i].DefaultValue)
+		if strings.Contains(tmp, "::") {
+			fields[i].DefaultValue = strings.Split(tmp, "::")[0]
+		} else if tmp == "uuid_generate_v4()" {
+			fields[i].DefaultValue = ""
+		}
+	}
 	if err != nil {
 		return nil, err
 	}

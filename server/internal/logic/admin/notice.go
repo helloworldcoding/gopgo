@@ -7,11 +7,6 @@ package admin
 
 import (
 	"context"
-	"github.com/gogf/gf/v2/database/gdb"
-	"github.com/gogf/gf/v2/errors/gerror"
-	"github.com/gogf/gf/v2/frame/g"
-	"github.com/gogf/gf/v2/os/gtime"
-	"github.com/gogf/gf/v2/util/gconv"
 	"hotgo/internal/consts"
 	"hotgo/internal/dao"
 	"hotgo/internal/library/contexts"
@@ -23,6 +18,12 @@ import (
 	"hotgo/internal/websocket"
 	"hotgo/utility/simple"
 	"hotgo/utility/validate"
+
+	"github.com/gogf/gf/v2/database/gdb"
+	"github.com/gogf/gf/v2/errors/gerror"
+	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/os/gtime"
+	"github.com/gogf/gf/v2/util/gconv"
 )
 
 type sAdminNotice struct{}
@@ -324,7 +325,7 @@ func (s *sAdminNotice) messageIds(ctx context.Context, memberId int64) (ids []in
 	columns, err := s.Model(ctx, &handler.Option{FilterAuth: false}).
 		Fields("id").
 		Where("status", consts.StatusEnabled).
-		Where("(`type` IN(?) OR (`type` = ? and JSON_CONTAINS(`receiver`,'"+gconv.String(memberId)+"')))",
+		Where("(\"type\" IN(?) OR (\"type\" = ? and receiver::jsonb @> '"+gconv.String(memberId)+"'::jsonb))",
 			[]int{consts.NoticeTypeNotify, consts.NoticeTypeNotice}, consts.NoticeTypeLetter,
 		).Array()
 	if err != nil {

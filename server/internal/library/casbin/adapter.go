@@ -23,17 +23,17 @@ var defaultTableName = dao.AdminRoleCasbin.Table()
 const (
 	dropPolicyTableSql   = `DROP TABLE IF EXISTS %s`
 	createPolicyTableSql = `
-CREATE TABLE IF NOT EXISTS %s (
-  id bigint(20) NOT NULL AUTO_INCREMENT,
-  p_type varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
-  v0 varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
-  v1 varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
-  v2 varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
-  v3 varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
-  v4 varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
-  v5 varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
-  PRIMARY KEY (id) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '管理员_casbin权限表' ROW_FORMAT = Dynamic;
+CREATE TABLE IF NOT EXISTS "%s" (
+    id bigserial not null,
+  "p_type" varchar(64) DEFAULT NULL,
+  "v0" varchar(256) DEFAULT NULL,
+  "v1" varchar(256) DEFAULT NULL,
+  "v2" varchar(256) DEFAULT NULL,
+  "v3" varchar(256) DEFAULT NULL,
+  "v4" varchar(256) DEFAULT NULL,
+  "v5" varchar(256) DEFAULT NULL,
+   CONSTRAINT "%s_pkey" PRIMARY KEY ("id")
+) 
 `
 )
 
@@ -56,7 +56,7 @@ type (
 
 	// policy rule entity
 	policyRule struct {
-		ID    int64  `orm:"id" json:"id"`
+		ID    int64  `orm:"id,primary" json:"id"`
 		PType string `orm:"p_type" json:"p_type"`
 		V0    string `orm:"v0" json:"v0"`
 		V1    string `orm:"v1" json:"v1"`
@@ -106,7 +106,7 @@ func (a *adapter) model() *gdb.Model {
 
 // create a policy table when it's not exists.
 func (a *adapter) createPolicyTable() (err error) {
-	_, err = a.db.Exec(context.TODO(), fmt.Sprintf(createPolicyTableSql, a.table))
+	_, err = a.db.Exec(context.TODO(), fmt.Sprintf(createPolicyTableSql, a.table, a.table))
 	return
 }
 
@@ -179,7 +179,7 @@ func (a *adapter) AddPolicies(sec string, ptype string, rules [][]string) (err e
 		policyRules = append(policyRules, a.buildPolicyRule(ptype, rule))
 	}
 
-	_, err = a.model().OmitEmptyData().Insert(policyRules)
+	_, err = a.model().OmitEmptyData().Fields("p_type,v0,v1,v2,v3,v4,v5").Insert(policyRules)
 	return
 }
 
@@ -282,7 +282,9 @@ func (a *adapter) loadPolicyRule(rule policyRule, model model.Model) {
 
 // 构建策略规则
 func (a *adapter) buildPolicyRule(ptype string, data []string) policyRule {
-	rule := policyRule{PType: ptype}
+	rule := policyRule{
+		PType: ptype,
+	}
 
 	if len(data) > 0 {
 		rule.V0 = data[0]
@@ -307,5 +309,6 @@ func (a *adapter) buildPolicyRule(ptype string, data []string) policyRule {
 	if len(data) > 5 {
 		rule.V5 = data[5]
 	}
+
 	return rule
 }

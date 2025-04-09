@@ -29,4 +29,5 @@ type SysAttachment struct {
 	Status    interface{} // 状态
 	CreatedAt *gtime.Time // 创建时间
 	UpdatedAt *gtime.Time // 修改时间
+	Uuid      interface{} // 唯一标识
 }

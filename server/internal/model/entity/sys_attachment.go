@@ -13,7 +13,7 @@ type SysAttachment struct {
 	Id        int64       `json:"id"        orm:"id"         description:"文件ID"`
 	AppId     string      `json:"appId"     orm:"app_id"     description:"应用ID"`
 	MemberId  int64       `json:"memberId"  orm:"member_id"  description:"管理员ID"`
-	CateId    uint64      `json:"cateId"    orm:"cate_id"    description:"上传分类"`
+	CateId    int64       `json:"cateId"    orm:"cate_id"    description:"上传分类"`
 	Drive     string      `json:"drive"     orm:"drive"      description:"上传驱动"`
 	Name      string      `json:"name"      orm:"name"       description:"文件原始名"`
 	Kind      string      `json:"kind"      orm:"kind"       description:"上传类型"`
@@ -27,4 +27,5 @@ type SysAttachment struct {
 	Status    int         `json:"status"    orm:"status"     description:"状态"`
 	CreatedAt *gtime.Time `json:"createdAt" orm:"created_at" description:"创建时间"`
 	UpdatedAt *gtime.Time `json:"updatedAt" orm:"updated_at" description:"修改时间"`
+	Uuid      string      `json:"uuid"      orm:"uuid"       description:"唯一标识"`
 }

@@ -12,7 +12,7 @@ import (
 // SysEmsLog is the golang structure of table hg_sys_ems_log for DAO operations like Where/Data.
 type SysEmsLog struct {
 	g.Meta    `orm:"table:hg_sys_ems_log, do:true"`
-	Id        interface{} // 主键
+	Id        interface{} //
 	Event     interface{} // 事件
 	Email     interface{} // 邮箱地址，多个用;隔开
 	Code      interface{} // 验证码

@@ -313,6 +313,20 @@ type (
 		// TreeOption 获取选项树表关系树选项
 		TreeOption(ctx context.Context) (nodes []tree.Node, err error)
 	}
+	ISysPodcast interface {
+		// Model 播客管理ORM模型
+		Model(ctx context.Context, option ...*handler.Option) *gdb.Model
+		// List 获取播客管理列表
+		List(ctx context.Context, in *sysin.PodcastListInp) (list []*sysin.PodcastListModel, totalCount int, err error)
+		// Export 导出播客管理
+		Export(ctx context.Context, in *sysin.PodcastListInp) (err error)
+		// Edit 修改/新增播客管理
+		Edit(ctx context.Context, in *sysin.PodcastEditInp) (err error)
+		// Delete 删除播客管理
+		Delete(ctx context.Context, in *sysin.PodcastDeleteInp) (err error)
+		// View 获取播客管理指定信息
+		View(ctx context.Context, in *sysin.PodcastViewInp) (res *sysin.PodcastViewModel, err error)
+	}
 	ISysProvinces interface {
 		// Tree 关系树选项列表
 		Tree(ctx context.Context) (list []*sysin.ProvincesTree, err error)
@@ -422,6 +436,7 @@ var (
 	localSysLoginLog       ISysLoginLog
 	localSysNormalTreeDemo ISysNormalTreeDemo
 	localSysOptionTreeDemo ISysOptionTreeDemo
+	localSysPodcast        ISysPodcast
 	localSysProvinces      ISysProvinces
 	localSysServeLicense   ISysServeLicense
 	localSysServeLog       ISysServeLog
@@ -603,6 +618,17 @@ func SysOptionTreeDemo() ISysOptionTreeDemo {
 
 func RegisterSysOptionTreeDemo(i ISysOptionTreeDemo) {
 	localSysOptionTreeDemo = i
+}
+
+func SysPodcast() ISysPodcast {
+	if localSysPodcast == nil {
+		panic("implement not found for interface ISysPodcast, forgot register?")
+	}
+	return localSysPodcast
+}
+
+func RegisterSysPodcast(i ISysPodcast) {
+	localSysPodcast = i
 }
 
 func SysProvinces() ISysProvinces {

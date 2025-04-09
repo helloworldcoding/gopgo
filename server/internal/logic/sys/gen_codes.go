@@ -8,12 +8,6 @@ package sys
 import (
 	"context"
 	"fmt"
-	"github.com/gogf/gf/v2/encoding/gjson"
-	"github.com/gogf/gf/v2/errors/gerror"
-	"github.com/gogf/gf/v2/frame/g"
-	"github.com/gogf/gf/v2/os/gtime"
-	"github.com/gogf/gf/v2/text/gregex"
-	"github.com/gogf/gf/v2/text/gstr"
 	"hotgo/internal/consts"
 	"hotgo/internal/dao"
 	"hotgo/internal/library/hggen"
@@ -22,6 +16,13 @@ import (
 	"hotgo/internal/model/input/sysin"
 	"hotgo/internal/service"
 	"hotgo/utility/validate"
+
+	"github.com/gogf/gf/v2/encoding/gjson"
+	"github.com/gogf/gf/v2/errors/gerror"
+	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/os/gtime"
+	"github.com/gogf/gf/v2/text/gregex"
+	"github.com/gogf/gf/v2/text/gstr"
 )
 
 type sSysGenCodes struct{}
@@ -211,11 +212,13 @@ func (s *sSysGenCodes) Selects(ctx context.Context, in *sysin.GenCodesSelectsInp
 // TableSelect 表选项
 func (s *sSysGenCodes) TableSelect(ctx context.Context, in *sysin.GenCodesTableSelectInp) (res []*sysin.GenCodesTableSelectModel, err error) {
 	var (
-		sql           = "SELECT TABLE_NAME as value, TABLE_COMMENT as label FROM information_schema.`TABLES` WHERE TABLE_SCHEMA = '%s'"
+		//sql           = "SELECT table_name as value, obj_description((quote_ident(table_schema) || '.' || quote_ident(table_name))::regclass) as label FROM information_schema.tables WHERE table_schema = '%s'"
+		sql           = "select table_name as value, table_name as label from information_schema.tables where table_catalog = '%s' and table_schema = 'public' and table_type = 'BASE TABLE'"
 		config        = g.DB(in.Name).GetConfig()
 		disableTables = g.Cfg().MustGet(ctx, "hggen.disableTables").Strings()
 		lists         []*sysin.GenCodesTableSelectModel
 	)
+	fmt.Println("\n" + fmt.Sprintf(sql, config.Name) + "\n")
 
 	if err = g.DB(in.Name).Ctx(ctx).Raw(fmt.Sprintf(sql, config.Name)).Scan(&lists); err != nil {
 		return
@@ -235,7 +238,7 @@ func (s *sSysGenCodes) TableSelect(ctx context.Context, in *sysin.GenCodesTableS
 		}
 		if newValue == "" {
 			err = gerror.Newf("表名[%v]前缀必须和配置中的前缀设置[%v] 保持一致", v.Value, config.Prefix)
-			return
+			return nil, err
 		}
 
 		// 如果是插件模块，则移除掉插件表前缀
@@ -260,11 +263,11 @@ func (s *sSysGenCodes) TableSelect(ctx context.Context, in *sysin.GenCodesTableS
 // ColumnSelect 表字段选项
 func (s *sSysGenCodes) ColumnSelect(ctx context.Context, in *sysin.GenCodesColumnSelectInp) (res []*sysin.GenCodesColumnSelectModel, err error) {
 	var (
-		sql    = "select COLUMN_NAME as value,COLUMN_COMMENT as label from information_schema.COLUMNS where TABLE_SCHEMA = '%s' and TABLE_NAME = '%s'"
-		config = g.DB(in.Name).GetConfig()
+		sql = "SELECT ordinal_position as id, c.column_name as name, col_description((quote_ident(table_schema) || '.' || quote_ident(table_name))::regclass, ordinal_position) as dc, data_type as \"dataType\", udt_name as \"sqlType\", character_maximum_length as length, is_nullable as \"isAllowNull\", column_default as \"defaultValue\", CASE WHEN pk.column_name IS NOT NULL THEN 'PRI' ELSE '' END as index, '' as extra FROM information_schema.columns c LEFT JOIN (SELECT ku.column_name FROM information_schema.table_constraints AS tc JOIN information_schema.key_column_usage AS ku ON tc.constraint_type = 'PRIMARY KEY' AND tc.constraint_name = ku.constraint_name WHERE tc.table_schema = 'public' AND tc.table_name = '%s') pk ON c.column_name = pk.column_name WHERE c.table_schema = 'public' AND c.table_name = '%s' ORDER BY ordinal_position ASC"
+		//config = g.DB(in.Name).GetConfig()
 	)
 
-	if err = g.DB(in.Name).Ctx(ctx).Raw(fmt.Sprintf(sql, config.Name, in.Table)).Scan(&res); err != nil {
+	if err = g.DB(in.Name).Ctx(ctx).Raw(fmt.Sprintf(sql, in.Table, in.Table)).Scan(&res); err != nil {
 		return
 	}
 
